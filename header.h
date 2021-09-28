@@ -52,3 +52,6 @@ extern void strrev(s8*);
 extern void my_strcpy(const u8*,u8*);
 extern void LCD_int(u16);
 extern void LCD_float(float);
+extern void uart_int(u8*);
+extern void uart_float(u8*);
+extern void uart_rx_string(u8*,u8);
