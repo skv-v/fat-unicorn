@@ -55,3 +55,5 @@ extern void LCD_float(float);
 extern void uart_int(u8*);
 extern void uart_float(u8*);
 extern void uart_rx_string(u8*,u8);
+exrern void en_uart_interrupt(void);
+extern void uart_handler(void) interrupt 4;
