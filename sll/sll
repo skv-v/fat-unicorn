@@ -1,0 +1,333 @@
+#include"header.h"
+void main()
+{
+	int op,c;
+	SLL *headptr=0; // headptr pointing to zero
+	while(1)
+	{
+		printf("enter  your choice\n");
+		printf("1)add_begin  2)add_end  3)add_middle  4)print_records 5)count_nodes 6)save_file  7)read_file 8)reverse_print 9)delete_all  10) delete_rollno   11) sort_data  12) print_recurrsion  13)reverse_rec 14)reverse_links  18) exit\n");
+		scanf("%d",&op);
+		switch(op)
+		{
+			case 1: add_begin(&headptr);break;
+			case 2: add_end(&headptr);break;
+			case 3: add_middle(&headptr); break;
+			case 4: print_data(headptr); break;
+			case 5: c=count_nodes(headptr);
+				printf("Total node count: %d\n",c);break;
+			case 6: save_file(headptr);break;
+			case 7: read_file(&headptr);break;
+			case 8: reverse_print(headptr);break;
+			case 9: delete_all(&headptr);break;
+			case 10: delete_node(&headptr); break;
+			case 11: sort_data(&headptr);break;
+			case 12: print_rec(headptr);break;
+			case 13: reverse_rec(headptr);break;
+			case 14: reverse_links(&headptr);break;
+			case 18: exit(0);
+			default: printf("unknown option\n");
+		}
+	}
+}
+
+void reverse_links(SLL** head) 
+{
+	if(head==0){
+		printf("no nodes are available\n");
+		return;
+	}
+	SLL *p,*q,*r;
+	p=*head; // p pointing to first node 
+	q=0;
+	while(p)
+	{
+		r=q;
+		q=p;	
+		p=p->next;
+		q->next=r;
+
+	}
+	*head=q;
+}
+
+void reverse_rec(SLL *head) {
+	static int c=0;
+	if(head)
+	{
+		c++;
+		reverse_rec(head->next); // recurrsion call
+		printf("%d %s %f \n",head->rollno,head->name,head->marks);
+	}
+	else
+	{
+		if(c==0)
+			printf("no nodes are avaiable\n");
+
+	}
+}
+
+void print_rec(SLL *head) {
+	static int c=0;
+	if(head)
+	{
+		c++;
+		printf("%d %s %f \n",head->rollno,head->name,head->marks);
+		print_rec(head->next); // recurrsion call
+	}
+	else
+	{
+		if(c==0)
+			printf("no nodes are avaiable\n");
+
+	}
+
+}
+
+void sort_data(SLL **head){
+	if(head==0)
+	{
+		printf("no nodes are avaibale to delete\n");
+		return;
+	}
+	SLL *temp=*head,*pre;
+
+	SLL t;
+	int i,j,c;
+	c=count_nodes(*head); //counting num of nodes
+	for(i=0;i<c-1;i++) //outer for loop
+	{
+		pre=temp->next; //pre node pointing to temp->next
+		for(j=0;j<c-1-i;j++) //inner for loop
+		{
+			if(temp->rollno> pre->rollno) //checking asending order
+			{
+				// swapping the data
+				t.rollno=temp->rollno;
+				temp->rollno=pre->rollno;
+				pre->rollno=t.rollno;
+
+				strcpy(t.name,temp->name);
+				strcpy(temp->name,pre->name);
+				strcpy(pre->name,t.name);
+
+				t.marks=temp->marks;
+				temp->marks=pre->marks;
+				pre->marks=t.marks;
+
+			}
+			pre=pre->next; //updating to next node
+		}
+		temp=temp->next; //temp is pinting to next node
+	}
+}
+
+void delete_node(SLL **head) {
+	if(head==0) {
+		printf("no nodes are available to delete\n");
+		return;
+	}
+	SLL *del=*head; // del pointer pointing to firs node 
+	SLL *prev=*head;  // prev is pointer pointing to first node
+	int num;
+	printf("enter rollno to delete\n");
+	scanf("%d",&num); //scanning num to delete
+	while(del) //searching for the num in data base
+	{
+		if(del->rollno==num) // if rollno present
+		{
+			if(del==*head)  //is it first node?
+				*head=(*head)->next; // update headpointer
+			else
+				prev->next=del->next; // update deleting node
+
+			free(del); //deleting a node
+			return;
+
+		}
+
+		prev=del; // update prev pointer (prev pointer pointing to deleted node previous 
+		del=del->next; //update del to next node ,if not present
+
+	}
+	if(del==0)
+		printf("rollno not found in data base\n");
+
+}
+
+void delete_all(SLL ** head) {
+	if(head==0)
+	{
+		printf("no nodes are available to delete\n");
+		return ;
+	}
+
+	SLL *del=*head; // del is pointer pointing to first node
+	while(del)
+	{
+		*head= (*head)->next; // updating headpointer to next node 
+		free(del);  //deleteing the memory
+		del=*head;  // updating del pointer to delteing node
+	}
+}
+
+int search_rollno(int  num,SLL *head)
+{
+	while(head) //rotating  till reach to last node
+	{ 
+		if(head->rollno==num) // checking rollno exist or not
+			return 0; // if rollno present then return 0
+		else
+			head=head->next; // update head pointer 
+	}
+	return 1; // if rollno not present then return 1
+}
+
+void add_middle(SLL**head)
+{
+	SLL *new,*last;
+	new=(SLL*)malloc(sizeof(SLL)); // memory created
+	printf("enter rollno name and marks\n");
+	scanf("%d%s%f",&new->rollno,new->name,&new->marks);
+	if((*head==0) || ((*head)->rollno> new->rollno))
+	{
+		new->next= *head;  //newly created node next address will modify
+		*head=new; // headpointer will modify
+	}
+	else
+	{
+		last=*head; // last pointer pointing to starting position
+		while((last->next!=0) && (last->next->rollno <new->rollno))
+			last=last->next; // updating last pointer to next address
+
+		new->next=last->next; // newly created node next address updated
+		last->next=new; // previous node next address updated
+
+	}
+
+}
+
+void reverse_print(SLL *head)
+{
+	int i,j;
+	if(head==0)
+	{
+		printf("no records found\n");
+		return ;
+	}
+	int c;
+	SLL *temp;
+	c=count_nodes(head); //counting num of records
+	for(i=0;i<c;i++) // rotating 
+	{
+		temp=head; // temp pointer always starting from first node
+		for(j=0;j<c-1-i;j++) // pointing to required node
+			temp=temp->next;
+		printf("%d %s %f\n",temp->rollno,temp->name,temp->marks);
+		// printing
+	}
+
+}
+
+void read_file(SLL **head)
+{
+	FILE *fp;
+	fp=fopen("student.txt","r"); //opening a file in read mode
+	SLL *new;
+	while(1) 
+	{
+		new=(SLL*)malloc(sizeof(SLL)); //creating a memory
+		if(fscanf(fp,"%d%s%f",&new->rollno,new->name,&new->marks)==-1)          //reading the records from file
+		{
+			free(new);
+			break;
+		}
+		new->next=*head; // creating link
+		*head=new; //updating headpointer
+	}
+}
+
+void add_end(SLL **head){
+	SLL *new,*last;
+	new=(SLL*)malloc(sizeof(SLL)); //creating the memory 
+	printf("enter rollno name and marks\n"); //scanning record
+	scanf("%d%s%f",&new->rollno,new->name,&new->marks);
+	new->next=0; // update last node address always zero
+	if(*head==0)  //checking if headpointer zero or not,if zero
+		*head=new;  //modify headpointer
+	else
+	{ 
+		last=*head; // last pointer poinitng to first node
+		while(last->next!=0) //checking till last node
+			last=last->next; //travelling to next node
+
+		last->next=new; // last node next address updating
+	}
+
+}
+
+void add_begin(SLL **head)
+{
+	int ret;
+	SLL *new;
+	new= malloc(sizeof(SLL));
+	printf("enter rollno\n");
+abc:	
+	scanf("%d",&new->rollno); // scanning rollno
+	ret=search_rollno(new->rollno,*head); //searching for rollno in database
+	if(ret==0) // if present
+	{
+		printf("rollno already exist... enter new num\n");
+		goto abc; // re-scan the rollno
+	}
+	printf("enter name and marks\n");
+	scanf("%s%f",new->name,&new->marks);
+
+	new->next=*head; // newly created next address updated
+	*head=new; // headpointer updated 
+}
+
+void save_file(SLL *ptr) {
+	if(ptr==0)
+	{
+		printf("no records available\n");
+		return;
+	}
+	FILE *fp;
+	fp=fopen("student.txt","w"); // opening a file in write mode
+	while(ptr) //checking till get last node
+	{
+		fprintf(fp,"%d %s %f\n",ptr->rollno,ptr->name,ptr->marks);
+		ptr=ptr->next; // travelling  to next node
+	}
+}
+
+void print_data(SLL *ptr) {
+	if(ptr==0)
+	{
+		printf("no records available\n");
+		return;
+	}
+	while(ptr) // checking till get last node
+	{
+		printf("%d %s %f\n",ptr->rollno,ptr->name,ptr->marks);
+		ptr=ptr->next; // travelling to next node
+	}
+
+}
+
+int count_nodes(SLL *ptr) {
+	int count=0;
+	if(ptr==0)
+	{
+		return 0;
+	}
+	while(ptr) //checking till get last node
+	{
+		count++; //counting the nodes
+		ptr=ptr->next; // travelling to next node
+	}
+	return count; //finally, returning the count
+}
+
+

@@ -1,0 +1,273 @@
+#include"header.h"
+void main()
+{
+	int op,c;
+	SLL *headptr=0; // headpointer pointing to first record
+	while(1)
+	{
+		printf("enter choice\n");
+		printf("1)add_data  2)print_data  3)count_data 4)save_data 5)delete_data 6)exit \n");
+		scanf("%d",&op);
+		switch(op)
+		{
+			case 1: add_record(&headptr); break;
+			case 2: print_record(headptr); break;
+			case 3: c=count_nodes(headptr);
+				printf("count: %d\n",c);
+				break;
+			case 4:save_file(headptr);break;
+			case 5:delete_record(&headptr);break;
+			case 6:exit(0);
+				
+			default: printf("Wrong option\n");
+		}
+	}
+}
+/************ adding data ************/
+void add_record(SLL **ptr)
+{
+   int op;
+   printf("enter sub menu option\n");
+   printf("1) add_begin    2)add_end    3)add_middle  4)exit\n");
+   scanf("%d",&op);
+   switch(op)
+  {
+     case 1 : add_begin(ptr); break;
+     case 2: add_end (ptr); break;
+    case 3: add_middle(ptr);break;
+    case 4: return; 
+    
+   default: printf("unknown option\n");
+  } 
+}
+/*********** printing data *************/
+void print_record(SLL *ptr)
+{
+   int op;
+   printf("enter sub menu option\n");
+   printf("1) forward_loop    2)forward_recursion    3)reverse_loop  4)reverse_recursion  5)exit\n");
+   scanf("%d",&op);
+   switch(op)
+  {
+     case 1 :  print_data(ptr); break;
+     case 2: print_recursion(ptr);break;
+ case 3:  reverse_print(ptr); break;
+    case 4: reverse_recursion(ptr); break;
+   case 5: return; 
+   default: printf("unknown option\n");
+  } 
+}
+/*************** delete_data *************/
+void delete_record(SLL **ptr)
+{
+   int op;
+   printf("enter sub menu option\n");
+   printf("1) delete_node   2)delete_all  3)exit\n");
+   scanf("%d",&op);
+   switch(op)
+  {
+     case 1 : delete_node_data(ptr);  break;
+     case 2: delete_all(ptr); break;
+     case 3: return; 
+    default: printf("unknown option\n");
+  } 
+}
+
+/********** printing records in forward order using recursion ******/
+void print_recursion(SLL *ptr)
+{
+   if(ptr==0)
+       return;
+   else
+   {
+     printf("%d %s %f\n",ptr->rollno,ptr->name,ptr->marks);
+     print_recursion(ptr->next);
+   }
+}
+/********** printing records in revrese order using recursion ******/
+void reverse_recursion(SLL *ptr)
+{
+   if(ptr==0)
+       return;
+   else
+   {
+     reverse_recursion(ptr->next);
+     printf("%d %s %f\n",ptr->rollno,ptr->name,ptr->marks);
+   }
+}
+
+/*************** printing records revreser order ************/
+void reverse_print(SLL *ptr) {
+  int c;
+  SLL* temp;
+  int i,j;
+  c=count_nodes(ptr);
+  for(i=0;i<c;i++)
+  {
+      temp=ptr;
+       for(j=0;j<c-1-i;j++)
+        temp=temp->next;
+      printf("%d %s %f\n",temp->rollno,temp->name,temp->marks);
+
+  }
+}
+
+
+
+
+
+/************ add_middle ********************/
+void add_middle(SLL ** ptr) {
+SLL * new,*last;
+new=malloc(sizeof(SLL));
+printf("enter rollno name marks\n");
+scanf("%d%s%f",&new->rollno,new->name,&new->marks);
+  if( (*ptr==0) || ( new->rollno < (*ptr)->rollno)) {
+      new->next=*ptr ;
+      *ptr=new;
+  }
+  else {
+	last=*ptr;
+	while( (last->next!=0) && (last->next->rollno < new->rollno))
+	  last=last->next;
+	  new->next=last->next;
+	  last->next=new;
+   }
+}
+
+
+
+
+
+
+/****************** delete node according to rollno *******************/
+void delete_node_data(SLL **ptr) {
+  SLL *del,*prev;
+   int num;
+   del=prev=*ptr;
+   if(*ptr==0)
+   {
+	printf("no nodes available to delete\n");
+	return ;
+   }
+   printf("enter rollno to delete a record\n");
+   scanf("%d",&num);
+   while(del)
+   {
+            if(del->rollno == num)   //cheking rollno available or not
+	    {
+	    	if(del==*ptr)   // checking is it first node or not?
+		*ptr= del->next;    // if yes,updating headpointer 
+		else                        
+		 prev->next=del->next;        // updating deleting node previous record
+		
+		free(del);   //deleting the record
+		del=0;
+		 return;
+	    }
+	    prev=del;   // pointing to previous node 
+	del=del->next ;  
+   }
+   if(del==0)
+   printf("rollnum not found in records\n");
+
+}
+
+/****************** add a node at ending position  **************/
+
+void add_end(SLL **ptr) {
+SLL* new,*last;
+ new=malloc(sizeof(SLL));
+ printf("enter rollno name and marks\n");
+ scanf("%d%s%f",&new->rollno,new->name,&new->marks);
+
+   new->next=0;   // newly created node next updating as zero
+   if(*ptr==0)
+     *ptr=new;  // updating headpointer if no nodes available
+  else
+  {
+	last=*ptr;
+	while(last->next)
+	 last=last->next;    // checking last node 
+
+	 last->next=new;        //updating last node 
+  }
+}
+
+
+/************* delete all the nodes in sll ****************/
+void delete_all(SLL **ptr) {
+	if(*ptr==0)
+	{
+		printf("No records available to delete\n");
+		return ;
+	}
+	SLL *del;
+	while(*ptr) {	
+		del=*ptr;  // storing deleted node in del 
+		*ptr=(*ptr)->next;  // updating headpointer
+		free(del);  // deleteing a node
+		del=0;
+	}
+}
+/*************** add a node at starting position *****************/
+void add_begin(SLL **ptr){
+	SLL *new;  // pointer pointing to newly created node
+	new =malloc(sizeof(SLL)); // node created dynamically
+	printf("enter rollno ,name,marks\n"); //scanning data
+	scanf("%d%s%f",&new->rollno,new->name,&new->marks);
+	new->next = *ptr; // updating newly created node next 
+	*ptr=new; //changing headptr
+}
+/************ printing records one by one ****************/
+void print_data(SLL* ptr)
+{
+	if(ptr==0) //checking headptr pointing to any node /not
+	{
+		printf("No records available\n");
+		return;
+	}
+	while(ptr) //rotating loop till get last record
+	{
+		printf("%d %s %f\n",ptr->rollno,ptr->name,ptr->marks);
+		ptr=ptr->next;  // updating to next node
+
+	}
+}
+/**************** counting all the nodes ****************/
+int  count_nodes(SLL* ptr)
+{
+	int count=0;
+	if(ptr==0) //checking headptr pointing to any node /not
+	{
+		printf("No records available\n");
+		return 0;
+	}
+	while(ptr) //rotating loop till get last record
+	{
+		count++;
+		ptr=ptr->next;  // updating to next node
+	}
+	return count;
+}
+/************* saving the records in a file *****************/
+void save_file(SLL* ptr)
+{
+	if(ptr==0) //checking headptr pointing to any node /not
+	{
+		printf("No records available\n");
+		return;
+	}
+	FILE *fp;
+	fp=fopen("studnet_record.txt","w");
+	while(ptr) //rotating loop till get last record
+	{
+		fprintf(fp,"%d %s %f\n",ptr->rollno,ptr->name,ptr->marks);
+		ptr=ptr->next;  // updating to next node
+	}
+	fclose(fp);
+}
+
+
+
+
